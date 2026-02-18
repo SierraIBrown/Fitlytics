@@ -18,7 +18,7 @@ The UI design mockups are attached to the repository
 - Daily/weekly/monthly progress charts
 - Workout presets and quick-add
 - Account signup / login and session persistence
-- Mobile-friendly responsive UI
+- Web-friendly responsive UI
 
 ## Tech Stack
 - Frontend: Next.js (React) + TypeScript
