@@ -1,7 +1,6 @@
 #Backend
 node_modules/
 tsconfig.json
-pnpm-lock.yaml
 package.json
 jest.config.js
 
