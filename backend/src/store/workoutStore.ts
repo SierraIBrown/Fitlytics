@@ -36,6 +36,7 @@ export type WorkoutQuery = {
 };
 
 export function queryWorkouts(q: WorkoutQuery): Workout[]{
+    //Filters workouts by type
     return workouts.filter((w) => {
         if(q.type && w.type !== q.type) return false;
 
