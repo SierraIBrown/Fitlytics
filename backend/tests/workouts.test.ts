@@ -48,7 +48,7 @@ describe("POST /workouts", () => {
             notes: "Felt good"
         };
 
-        const res = (await request(app).post("/workouts")).send(payload);
+        const res = await request(app).post("/workouts").send(payload);
 
         expect(res.status).toBe(201);
         expect(res.body.id).toBeDefined();
@@ -64,7 +64,7 @@ describe("POST /workouts", () => {
     });
 
     it("returns 400 on invalid type", async () => {
-        const res = (await request(app).post("/workouts")).send({
+        const res = await request(app).post("/workouts").send({
             date: "2026-02-24",
             type: "swimming",
             durationMin: 20
