@@ -26,7 +26,7 @@ describe("GET /workouts", () => {
     });
 
     it("filters by date range", async () => {
-        const res = await request(app).get("workouts?from=2026-02-01&to=2026-02-28");
+        const res = await request(app).get("/workouts?from=2026-02-01&to=2026-02-28");
         expect(res.status).toBe(200);
         expect(res.body.length).toBe(2);
     });

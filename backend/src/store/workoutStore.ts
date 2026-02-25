@@ -49,7 +49,7 @@ export function queryWorkouts(q: WorkoutQuery): Workout[]{
 
         if(q.to){
             const toTime = new Date(q.to).getTime();
-            if(!Number.isNaN(toTime) && d < toTime) return false;
+            if(!Number.isNaN(toTime) && d > toTime) return false;
         }
 
         return true;
