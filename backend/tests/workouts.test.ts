@@ -1,6 +1,6 @@
 import request from "supertest";
 import { createApp } from "../src/app";
-import { clearWorkouts, addWorkout } from "../src/store/workoutStore";
+import { clearWorkouts, addWorkout, getAllWorkouts } from "../src/store/workoutStore";
 
 describe("GET /workouts", () => {
     const app = createApp();
@@ -29,5 +29,47 @@ describe("GET /workouts", () => {
         const res = await request(app).get("/workouts?from=2026-02-01&to=2026-02-28");
         expect(res.status).toBe(200);
         expect(res.body.length).toBe(2);
+    });
+});
+
+describe("POST /workouts", () => {
+    const app = createApp();
+
+    beforeEach(() => {
+        clearWorkouts();
+    });
+
+    it("creates a workoutand returns it", async () => {
+        const payload = {
+            date: "2026-02-24",
+            type: "run",
+            durationMin: 30,
+            distanceMi: 3.1,
+            notes: "Felt good"
+        };
+
+        const res = await request(app).post("/workouts").send(payload);
+
+        expect(res.status).toBe(201);
+        expect(res.body.id).toBeDefined();
+        expect(res.body.type).toBe("run");
+
+        expect(getAllWorkouts().length).toBe(1);
+    });
+
+    it("returns 400 on missing required fields", async () => {
+        const res = await request(app).post("/workouts").send({ type: "run" });
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBeDefined();
+    });
+
+    it("returns 400 on invalid type", async () => {
+        const res = await request(app).post("/workouts").send({
+            date: "2026-02-24",
+            type: "swimming",
+            durationMin: 20
+        });
+
+        expect(res.status).toBe(400);
     });
 });
