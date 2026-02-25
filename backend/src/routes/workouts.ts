@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { queryWorkouts } from "../store/workoutStore";
+import { queryWorkouts, addWorkout } from "../store/workoutStore";
+import { validateWorkoutCreate } from "../validation/workoutValidation";
 import type { WorkoutType } from "../types";
 
 export const workoutsRouter = Router();
@@ -15,4 +16,15 @@ workoutsRouter.get("/", (req, res) => {
 
     const results = queryWorkouts(q);
     res.status(200).json(results);
+});
+
+workoutsRouter.post("/", (req, res) => {
+    const validation = validateWorkoutCreate(req.body);
+
+    if(!validation.ok){
+        return res.status(400).json({ error: validation.error });
+    }
+
+    const created = addWorkout(validation.value);
+    return res.status(201).json(created);
 });
