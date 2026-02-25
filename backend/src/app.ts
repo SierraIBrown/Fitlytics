@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { healthRouter } from "./routes/health";
+import { workoutsRouter } from "./routes/workouts";
 
 export const createApp = () => {
     const app = express();
@@ -9,6 +10,7 @@ export const createApp = () => {
     app.use(express.json());
 
     app.use("/health", healthRouter);
+    app.use("/workouts", workoutsRouter);
 
     return app;
 }
