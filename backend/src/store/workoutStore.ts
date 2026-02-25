@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import type { Workout } from "../types";
+import type { Workout, WorkoutType } from "../types";
 
 let workouts: Workout[] = [];
 
@@ -28,6 +28,33 @@ function seedWorkouts(){
 }
 
 seedWorkouts();
+
+export type WorkoutQuery = {
+    type?: WorkoutType;
+    from?: string;
+    to?: string;
+};
+
+export function queryWorkouts(q: WorkoutQuery): Workout[]{
+    return workouts.filter((w) => {
+        if(q.type && w.type !== q.type) return false;
+
+        const d = new Date(w.date).getTime();
+        if(Number.isNaN(d)) return false;
+
+        if(q.from){
+            const fromTime = new Date(q.from).getTime();
+            if(!Number.isNaN(fromTime) && d < fromTime) return false;
+        }
+
+        if(q.to){
+            const toTime = new Date(q.to).getTime();
+            if(!Number.isNaN(toTime) && d < toTime) return false;
+        }
+
+        return true;
+    });
+}
 
 export function getAllWorkouts(): Workout[]{
     return workouts;
