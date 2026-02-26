@@ -71,6 +71,15 @@ export function getAllWorkouts(): Workout[]{
     return workouts;
 }
 
+export function updateWorkout(id: string, input: Omit<Workout, "id">): Workout | null{
+    const idx = workouts.findIndex(w => w.id === id);
+    if(idx === -1) return null;
+
+    const updated: Workout = { id, ...input };
+    workouts[idx] = updated;
+    return updated;
+}
+
 export function clearWorkouts(){
     workouts = [];
 }
