@@ -73,3 +73,30 @@ describe("POST /workouts", () => {
         expect(res.status).toBe(400);
     });
 });
+
+describe("DELETE /workouts/:id", () => {
+    const app = createApp();
+
+    beforeEach(() => {
+        clearWorkouts();
+    });
+
+    it("deletes an existing workout", async () => {
+        const w = addWorkout({
+            date: "2026-02-24",
+            type: "run",
+            durationMin: 30
+        });
+
+        const res = await request(app).delete(`/workouts/${w.id}`);
+
+        expect(res.status).toBe(204);
+        expect(getAllWorkouts().length).toBe(0);
+    });
+
+    it("returns 404 for unknown id", async () => {
+        const res = await request(app).delete("/workouts/not-a-real-id");
+        expect(res.status).toBe(404);
+        expect(res.body.error).toBeDefined();
+    });
+});
