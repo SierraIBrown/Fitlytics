@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { queryWorkouts, addWorkout } from "../store/workoutStore";
+import { queryWorkouts, addWorkout, deleteWorkout } from "../store/workoutStore";
 import { validateWorkoutCreate } from "../validation/workoutValidation";
 import type { WorkoutType } from "../types";
 
@@ -27,4 +27,15 @@ workoutsRouter.post("/", (req, res) => {
 
     const created = addWorkout(validation.value);
     return res.status(201).json(created);
+});
+
+workoutsRouter.delete("/:id", (req, res) => {
+    const { id } = req.params;
+
+    const deleted = deleteWorkout(id);
+    if(!deleted){
+        return res.status(404).json({ error: "Workout not found" });
+    }
+
+    return res.status(204).send();
 });
