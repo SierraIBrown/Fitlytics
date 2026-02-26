@@ -35,6 +35,16 @@ export type WorkoutQuery = {
     to?: string;
 };
 
+export function addWorkout(input: Omit<Workout, "id">): Workout{
+    const workout: Workout = {
+        id: randomUUID(),
+        ...input
+    };
+
+    workouts.push(workout);
+    return workout;
+}
+
 export function queryWorkouts(q: WorkoutQuery): Workout[]{
     //Filters workouts by type
     return workouts.filter((w) => {
@@ -61,22 +71,21 @@ export function getAllWorkouts(): Workout[]{
     return workouts;
 }
 
-export function addWorkout(input: Omit<Workout, "id">): Workout{
-    const workout: Workout = {
-        id: randomUUID(),
-        ...input
-    };
+export function updateWorkout(id: string, input: Omit<Workout, "id">): Workout | null{
+    const idx = workouts.findIndex(w => w.id === id);
+    if(idx === -1) return null;
 
-    workouts.push(workout);
-    return workout;
+    const updated: Workout = { id, ...input };
+    workouts[idx] = updated;
+    return updated;
+}
+
+export function clearWorkouts(){
+    workouts = [];
 }
 
 export function deleteWorkout(id: string): boolean{
     const initialLength = workouts.length;
     workouts = workouts.filter(w => w.id !== id);
     return workouts.length < initialLength;
-}
-
-export function clearWorkouts(){
-    workouts = [];
 }
