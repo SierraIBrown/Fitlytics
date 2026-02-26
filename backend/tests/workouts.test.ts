@@ -1,6 +1,7 @@
 import request from "supertest";
 import { createApp } from "../src/app";
 import { clearWorkouts, addWorkout, getAllWorkouts } from "../src/store/workoutStore";
+import { run } from "node:test";
 
 describe("GET /workouts", () => {
     const app = createApp();
@@ -71,6 +72,70 @@ describe("POST /workouts", () => {
         });
 
         expect(res.status).toBe(400);
+    });
+});
+
+describe("PUT /workouts/:id", () => {
+    const app = createApp();
+
+    beforeEach(() => {
+        clearWorkouts();
+    });
+
+    it("update an existing workout", async () => {
+        const w = addWorkout({
+            date: "2026-02-24",
+            type: "run",
+            durationMin: 30
+        });
+
+        const res = await request(app)
+            .put(`/workouts/${w.id}`)
+            .send({
+                date: "2026-02-25",
+                type: "strength",
+                durationMin: 45,
+                sets: 5,
+                reps: 5
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body.id).toBe(w.id);
+        expect(res.body.type).toBe("strength");
+
+        const all = getAllWorkouts();
+        expect(all.length).toBe(1);
+        expect(all[0].date).toBe("2026-02-25");
+    });
+
+    it("returns 404 if workout does not exist", async () => {
+        const res = await request(app)
+            .put("/workouts/not-real")
+            .send({
+                date: "2026-02-25",
+                type: "run",
+                durationMin: 20
+            });
+
+        expect(res.status).toBe(404);
+    });
+
+    it("returns 400 if payload is invalid", async () => {
+        const w = addWorkout({
+            date: "2026-02-24",
+            type: "run",
+            durationMin: 30
+        });
+
+        const res = await request(app)
+            .put(`/workouts/${w.id}`)
+            .send({
+                date: "2026-02-25",
+                type: "run"
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBeDefined();
     });
 });
 
