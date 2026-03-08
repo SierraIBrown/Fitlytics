@@ -2,10 +2,11 @@ import type { Workout, WorkoutType } from "../types";
 
 const allowedTypes: WorkoutType[] = ["run", "strength", "other"];
 
-export function validateWorkoutCreate(body: any): { ok: true; value: Omit<Workout, "id"> } | { ok: false; error: string }{
+export function validateWorkoutCreate(body: unknown): { ok: true; value: Omit<Workout, "id"> } | { ok: false; error: string }{
     if(!body || typeof body !== "object") return { ok: false, error: "Body must be an object" };
 
-    const { date, type, durationMin } = body;
+    const data = body as Record<string, unknown>;
+    const { date, type, durationMin } = data;
 
     if(typeof date !== "string" || date.trim() === "") return { ok: false, error: "date is required" };
     if(typeof type !== "string" || !allowedTypes.includes(type as WorkoutType)) return { ok: false, error: "type is invalid" };
@@ -15,12 +16,12 @@ export function validateWorkoutCreate(body: any): { ok: true; value: Omit<Workou
 
     const optionalNumbers = ["distanceMi", "sets", "reps", "weightLb"] as const;
     for(const key of optionalNumbers){
-        if(body[key] != null && (typeof body[key] !== "number" || !Number.isFinite(body[key]))){
+        if(data[key] != null && (typeof data[key] !== "number" || !Number.isFinite(data[key]))){
             return { ok: false, error: `${key} must be a number` };
         }
     }
 
-    if(body.notes != null && typeof body.notes !== "string"){
+    if(data.notes != null && typeof data.notes !== "string"){
         return { ok: false, error: "notes must be a string" };
     }
 
