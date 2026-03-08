@@ -12,6 +12,12 @@ export const createApp = () => {
 
     app.use("/health", healthRouter);
     app.use("/workouts", workoutsRouter);
+
+    if(process.env.NODE_ENV === "test"){
+        app.get("/error-test", (_req, _res) => {
+            throw new Error("Test error");
+        });
+    }
     app.use(errorHandler);
 
     return app;
