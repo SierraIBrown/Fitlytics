@@ -45,5 +45,5 @@
 body {
   background: var(--color-background);
   color: var(--color-text-primary);
-  font-family: Inter, sans-serif;
+  font-family: var(--font-inter), sans-serif;
 }
