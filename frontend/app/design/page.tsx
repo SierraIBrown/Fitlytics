@@ -8,7 +8,7 @@ import PageHeader from "@/components/layout/PageHeader";
 
 const colors = [
     { name: "Primary", hex: "#1D4ED8", value: "var(--color-primary)" },
-    { name: "Secondary", hex: "#14B8A6", value: "var(--color-secondary)" },
+    { name: "Accent", hex: "#14B8A6", value: "var(--color-accent)" },
     { name: "Background", hex: "#F8FAFC", value: "var(--color-background)" },
     { name: "Text Primary", hex: "#0F172A", value: "var(--color-text-primary)" },
     { name: "Text Secondary", hex: "#475569", value: "var(--color-text-secondary)" },
