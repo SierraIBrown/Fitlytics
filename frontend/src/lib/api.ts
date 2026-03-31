@@ -28,3 +28,19 @@ async function request<T>(path: string, options?: RequestInit): Promise<T>{
 
     return response.json();
 }
+
+export type WorkoutType = "run" | "strength" | "other";
+
+export type Workout = {
+    id: string;
+    date: string;
+    type: WorkoutType;
+    durationMin: number;
+    distanceMi?: number;
+    sets?: number;
+    reps?: number;
+    weightLb?: number;
+    notes?: string;
+};
+
+export type CreateWorkoutInput = Omit<Workout, "id">;
