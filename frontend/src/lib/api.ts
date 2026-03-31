@@ -44,3 +44,44 @@ export type Workout = {
 };
 
 export type CreateWorkoutInput = Omit<Workout, "id">;
+
+export async function getHealth(){
+    return request<{ status: string }>("/health");
+}
+
+export async function getWorkouts(params?: {
+    type?: WorkoutType;
+    from?: string;
+    to?: string;
+}){
+    const searchParams = new URLSearchParams();
+
+    if(params?.type) searchParams.set("type", params.type);
+    if(params?.from) searchParams.set("from", params.from);
+    if(params?.to) searchParams.set("to", params.to);
+
+    const query = searchParams.toString();
+    const path = query ? `/workouts?${query}` : "/workouts";
+
+    return request<Workout[]>(path);
+}
+
+export async function createWorkout(input: CreateWorkoutInput){
+    return request<Workout>("/workouts", {
+        method: "POST",
+        body: JSON.stringify(input),
+    });
+}
+
+export async function updateWorkout(id: string, input: CreateWorkoutInput){
+    return request<Workout>(`/workouts/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(input),
+    });
+}
+
+export async function deleteWorkout(id: string){
+    return request<void>(`/workouts/${id}`, {
+        method: "DELETE",
+    });
+}
