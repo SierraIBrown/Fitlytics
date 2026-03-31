@@ -36,7 +36,7 @@ export default function LogPage(){
     const [message, setMessage] = useState("");
 
     function handleChange(
-        e: React.ChangeEven<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ){
         const { name, value } = e.target;
         setForm((prev) => ({
