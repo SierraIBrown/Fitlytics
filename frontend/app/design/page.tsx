@@ -5,6 +5,7 @@ import Select from "@/components/ui/Select";
 import Section from "@/components/ui/Section";
 import StatCard from "@/components/dashboard/StatCard";
 import PageHeader from "@/components/layout/PageHeader";
+import TestApiCall from "./apitest";
 
 const colors = [
     { name: "Primary", hex: "#1D4ED8", value: "var(--color-primary)" },
@@ -21,6 +22,8 @@ const colors = [
 export default function DesignPage(){
     return(
         <main className="mx-auto max-w-6xl px-6 py-8">
+            <TestApiCall />
+            
             <PageHeader title="Fitlytics Design System"
                 subtitle="Reference page for colors, typography, and reusable components."
             />
