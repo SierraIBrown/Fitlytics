@@ -89,7 +89,7 @@ export default function DashboardPage(){
                     <StatCard label="Workouts This Week" value={loading ? "..." : stats.thisWeek}/>
                     <StatCard label="Total Minutes" value={loading ? "...": stats.totalMinutes}/>
                     <StatCard label="Current Streak" value={loading ? "...": stats.totalMinutes}/>
-                    <StatCard label="Most Recent" value={loading ? "...": stats.mostRecentWorkout ? stats.mostRecentWorkout.type : "None"} trend={stats.mostRecentWorkout ? new Date(stats.mostRecentWorkout.date) : undefined}/>
+                    <StatCard label="Most Recent" value={loading ? "...": stats.mostRecentWorkout ? stats.mostRecentWorkout.type : "None"} trend={stats.mostRecentWorkout ? new Date(stats.mostRecentWorkout.date).toLocaleDateString() : undefined}/>
                 </div>
             </Section>
 
