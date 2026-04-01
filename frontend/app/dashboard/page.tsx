@@ -1,9 +1,34 @@
+"use client";
+import { useEffect, useMemo, useState } from "react";
+import { getWorkouts, type Workout } from "@/lib/api";
 import Link from "next/link";
 import PageHeader from "@/components/layout/PageHeader";
 import Button from "@/components/ui/Button";
 import Section from "@/components/ui/Section";
 import Card from "@/components/ui/Card";
 import StatCard from "@/components/dashboard/StatCard";
+
+const [workouts, setWorkouts] = useState<Workout[]>([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
+
+useEffect(() => {
+    async function loadWorkouts(){
+        try{
+            setLoading(true);
+            setError("");
+            const data = await getWorkouts();
+            setWorkouts(data);
+        } catch (err){
+            console.error(err);
+            setError("Failed to load workouts.");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    loadWorkouts();
+}, []);
 
 const recentWorkouts = [
     {
@@ -37,6 +62,32 @@ const suggestedWorkouts = [
         description: "Stretching and movement work to support recovery.",
     },
 ];
+
+const stats = useMemo(() => {
+    const totalWorkouts = workouts.length;
+
+    const totalMinutes = workouts.reduce((sum, workout) => {
+        return sum + workout.durationMin;
+    }, 0);
+
+    const mostRecentWorkout = workouts.length > 0 ? [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] : null;
+
+    const thisWeek = workouts.filter((workout) => {
+        const workoutDate = new Date(workout.date);
+        const now = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(now.getDate() - 7);
+
+        return workoutDate >= sevenDaysAgo && workoutDate <= now;
+    }).length;
+
+    return{
+        totalWorkouts,
+        totalMinutes,
+        thisWeek,
+        mostRecentWorkout,
+    };
+}, [workouts]);
 
 export default function DashboardPage(){
     return(
