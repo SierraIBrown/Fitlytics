@@ -4,6 +4,7 @@ import Card from "@/components/ui/Card";
 import Section from "@/components/ui/Section";
 import Select from '@/components/ui/Select';
 import Input from "@/components/ui/Input";
+import WeeklyWorkoutsLineChart from "@/components/charts/WeeklyWorkoutsLineChart";
 
 export default function ProgressPage(){
     return(
@@ -42,9 +43,7 @@ export default function ProgressPage(){
             <Section title="Charts">
                 <div className="grid gap-6 lg:grid-cols-2">
                     <Card title="Weekly Activity">
-                        <div className="flex h-64 items-center justify-center" style={{ border: "1px dashed var(--color-border)", borderRadius: "var(--radius-md)", color: "var(--color-text-secondary)", }}>
-                            Weekly activity chart placeholder
-                        </div>
+                        <WeeklyWorkoutsLineChart />
                     </Card>
 
                     <Card title="Workout Type Distribution">
