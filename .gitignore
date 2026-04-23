@@ -6,3 +6,4 @@ package.json
 jest.config.js
 
 #Frontend
+pnpm-lock.yaml
