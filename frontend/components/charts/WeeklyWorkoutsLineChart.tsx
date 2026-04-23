@@ -22,7 +22,7 @@ export default function WeeklyWorkoutsLineChart(){
     const height = 260;
     const margin = { top: 20, right: 25, bottom: 35, left: 35 };
     const xScale = d3.scalePoint().domain(mockData.map((d) => d.day)).range([margin.left, width - margin.right]);
-    const yScale = d3.scaleLinear().domain([0, d3.max(mockData, (d) => d.count) ?? 0])
+    const yScale = d3.scaleLinear().domain([0, d3.max(mockData, (d) => d.count) ?? 0]).range([height - margin.bottom, margin.top]);
     const line = d3.line<WeeklyWorkoutPoint>().x((d) => xScale(d.day) ?? 0).y((d) => yScale(d.count)).curve(d3.curveMonotoneX);
     const pathData = line(mockData);
     const yTicks = yScale.ticks(4);
