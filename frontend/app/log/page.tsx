@@ -35,10 +35,10 @@ const initialForm: FormState = {
 
 export default function LogPage(){
     const [form, setForm] = useState<FormState>(initialForm);
-    const [message, setMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     const router = useRouter();
 
@@ -46,9 +46,15 @@ export default function LogPage(){
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ){
         const { name, value } = e.target;
+        
         setForm((prev) => ({
             ...prev,
             [name]: value,
+        }));
+
+        setFieldErrors((prev) => ({
+            ...prev,
+            [name]: "",
         }));
     }
 
@@ -60,8 +66,11 @@ export default function LogPage(){
         setError("");
         setSuccess("");
 
-        if(!form.date || !form.durationMin){
-            setMessage("Please fill in all required fields.");
+        const errors = validateForm();
+        setFieldErrors(errors);
+
+        if (Object.keys(errors).length > 0){
+            setError("Please fix the highlighted fields.");
             return;
         }
 
@@ -91,6 +100,38 @@ export default function LogPage(){
         }
     }
 
+    function validateForm(){
+        const errors: Record<string, string> = {};
+
+        if(!form.date){
+            errors.date = "Date is required";
+        }
+
+        if(!form.durationMin){
+            errors.durationMin = "Duration is required.";
+        } else if(Number(form.durationMin) <= 0){
+            errors.durationMin = "Duration must be greater than 0.";
+        }
+
+        if(form.type === "run" && form.distanceMi && Number(form.distanceMi) < 0){
+            errors.distanceMi = "Distance cannot be negative.";
+        }
+
+        if(form.type === "strength"){
+            if(form.sets && Number(form.sets) < 0){
+                errors.sets = "Sets cannot be negative.";
+            }
+            if(form.reps && Number(form.reps) < 0){
+                errors.reps = "Reps cannot be negative.";
+            }
+            if(form.weightLb && Number(form.weightLb) < 0){
+                errors.weightLb = "Weight cannot be negative.";
+            }
+        }
+
+        return errors;
+    }
+
     const showRunFields = form.type === "run";
     const showStrengthFields = form.type === "strength";
 
@@ -113,19 +154,19 @@ export default function LogPage(){
                     />
 
                     <div className="grid gap-4 md:grid-cols-2">
-                        <Input label="Date" id="date" name="date" type="date" value={form.date} onChange={handleChange} required />
-                        <Input label="Duration (minutes)" id="durationMin" name="durationMin" type="number" min="1" value={form.durationMin} onChange={handleChange} required />
+                        <Input label="Date" id="date" name="date" type="date" value={form.date} onChange={handleChange} error={fieldErrors.date} required />
+                        <Input label="Duration (minutes)" id="durationMin" name="durationMin" type="number" min="1" value={form.durationMin} onChange={handleChange} error={fieldErrors.durationMin} required />
                     </div>
 
                     {showRunFields && (
-                        <Input label="Distance (miles)" id="distanceMi" name="distanceMi" type="number" step="0.1" min="0" value={form.distanceMi} onChange={handleChange}/>
+                        <Input label="Distance (miles)" id="distanceMi" name="distanceMi" type="number" step="0.1" min="0" value={form.distanceMi} onChange={handleChange} error={fieldErrors.distanceMi} required />
                     )}
 
                     {showStrengthFields && (
                         <div className="grid gap-4 md:grid-cols-3">
-                            <Input label="Sets" id="sets" name="sets" type="number" min="0" value={form.sets} onChange={handleChange} />
-                            <Input label="Reps" id="reps" type="number" min="0" value={form.reps} onChange={handleChange} />
-                            <Input label="Weight (lb)" id="weightLb" name="weightLb" type="number" min="0" value={form.weightLb} onChange={handleChange} />
+                            <Input label="Sets" id="sets" name="sets" type="number" min="0" value={form.sets} onChange={handleChange} error={fieldErrors.sets} required />
+                            <Input label="Reps" id="reps" name="reps" type="number" min="0" value={form.reps} onChange={handleChange} error={fieldErrors.reps} required />
+                            <Input label="Weight (lb)" id="weightLb" name="weightLb" type="number" min="0" value={form.weightLb} onChange={handleChange} error={fieldErrors.weightLb} required />
                         </div>
                     )}
 
