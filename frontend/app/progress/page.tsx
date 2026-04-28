@@ -5,6 +5,7 @@ import Section from "@/components/ui/Section";
 import Select from '@/components/ui/Select';
 import Input from "@/components/ui/Input";
 import WeeklyWorkoutsLineChart from "@/components/charts/WeeklyWorkoutsLineChart";
+import WorkoutTypeBarChart from "@/components/charts/WorkoutTypeBarChart";
 
 export default function ProgressPage(){
     return(
@@ -47,9 +48,7 @@ export default function ProgressPage(){
                     </Card>
 
                     <Card title="Workout Type Distribution">
-                        <div className="flex h-64 items-center justify-center" style={{ border: "1px dashed var(--color-border)", borderRadius: "var(--radius-md)", color: "var(--color-text-secondary)", }}>
-                            Workout type chart placeholder
-                        </div>
+                        <WorkoutTypeBarChart />
                     </Card>
                 </div>
             </Section>
