@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { createWorkout } from "@/lib/api";
 import Link from "next/link";
 import PageHeader from "@/components/layout/PageHeader";
 import Card from "@/components/ui/Card";
@@ -34,6 +35,9 @@ const initialForm: FormState = {
 export default function LogPage(){
     const [form, setForm] = useState<FormState>(initialForm);
     const [message, setMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
     function handleChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -45,16 +49,39 @@ export default function LogPage(){
         }));
     }
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>){
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
+
+        setError("");
+        setSuccess("");
 
         if(!form.date || !form.durationMin){
             setMessage("Please fill in all required fields.");
             return;
         }
 
-        setMessage("Workout saved locally for now. Backend submission comes next.");
-        console.log("Workout form submitted:", form);
+        const payload = {
+            date: form.date,
+            type: form.type,
+            durationMin: Number(form.durationMin),
+            ...(form.distanceMi ? { distanceMi: Number(form.distanceMi) } : {}),
+            ...(form.sets ? { sets: Number(form.sets) } : {}),
+            ...(form.reps ? { reps: Number(form.reps) } : {}),
+            ...(form.weightLb ? { weightLb: Number(form.weightLb) } : {}),
+            ...(form.notes.trim() ? { notes: form.notes.trim() } : {}),
+        };
+
+        try{
+            setIsSubmitting(true);
+            await createWorkout(payload);
+            setSuccess("Workout saved successfully.");
+            setForm(initialForm);
+        } catch(err){
+            console.error(err);
+            setError(err instanceof Error ? err.message : "Failed to save workout.");
+        } finally{
+            setIsSubmitting(false);
+        }
     }
 
     const showRunFields = form.type === "run";
@@ -116,14 +143,20 @@ export default function LogPage(){
                         />
                     </div>
 
-                    {message && (
+                    {error && (
                         <p style={{ color: "var(--color-text-secondary)", fontSize: "14px" }}>
-                            {message}
+                            {error}
+                        </p>
+                    )}
+
+                    {success && (
+                        <p style={{ color: "var(--color-text-secondary)", fontSize: "14px" }}>
+                            {success}
                         </p>
                     )}
 
                     <div className="flex flex-wrap gap-3">
-                        <Button type="submit">Save Workout</Button>
+                        <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Save Workout"}</Button>
                         <Link href="/dashboard">
                             <Button variant="secondary" type="button">
                                 Back to Dashboard
