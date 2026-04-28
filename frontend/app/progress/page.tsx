@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
 import { getWorkouts, type Workout } from "@/lib/api";
 import PageHeader from "@/components/layout/PageHeader";
