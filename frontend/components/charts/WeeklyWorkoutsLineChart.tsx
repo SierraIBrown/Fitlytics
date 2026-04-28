@@ -2,29 +2,38 @@
 
 import * as d3 from "d3";
 
-type WeeklyWorkoutPoint = {
+export type WeeklyWorkoutPoint = {
     day: string;
     count: number;
 };
 
-const mockData: WeeklyWorkoutPoint[] = [
-    { day: "Mon", count: 1 },
-    { day: "Tue", count: 0 },
-    { day: "Wed", count: 2 },
-    { day: "Thu", count: 1 },
-    { day: "Fri", count: 3 },
-    { day: "Sat", count: 2 },
-    { day: "Sun", count: 1 },
-];
+type Props = {
+    data: WeeklyWorkoutPoint[];
+};
 
-export default function WeeklyWorkoutsLineChart(){
+export default function WeeklyWorkoutsLineChart({ data }: Props){
     const width = 600;
     const height = 260;
     const margin = { top: 20, right: 25, bottom: 35, left: 35 };
-    const xScale = d3.scalePoint().domain(mockData.map((d) => d.day)).range([margin.left, width - margin.right]);
-    const yScale = d3.scaleLinear().domain([0, d3.max(mockData, (d) => d.count) ?? 0]).range([height - margin.bottom, margin.top]);
-    const line = d3.line<WeeklyWorkoutPoint>().x((d) => xScale(d.day) ?? 0).y((d) => yScale(d.count)).curve(d3.curveMonotoneX);
-    const pathData = line(mockData);
+
+    const xScale = d3
+        .scalePoint()
+        .domain(data.map((d) => d.day))
+        .range([margin.left, width - margin.right]);
+    
+    const yScale = d3
+        .scaleLinear()
+        .domain([0, d3.max(data, (d) => d.count) ?? 0])
+        .nice()
+        .range([height - margin.bottom, margin.top]);
+    
+    const line = d3
+        .line<WeeklyWorkoutPoint>()
+        .x((d) => xScale(d.day) ?? 0)
+        .y((d) => yScale(d.count))
+        .curve(d3.curveMonotoneX);
+
+    const pathData = line(data);
     const yTicks = yScale.ticks(4);
 
     return(
@@ -57,7 +66,7 @@ export default function WeeklyWorkoutsLineChart(){
                     </g>
                 ))}
 
-                {mockData.map((d) => (
+                {data.map((d) => (
                     <text
                         key={d.day}
                         x={xScale(d.day)}
@@ -79,7 +88,7 @@ export default function WeeklyWorkoutsLineChart(){
                     />
                 )}
 
-                {mockData.map((d) => (
+                {data.map((d) => (
                     <circle
                         key={`${d.day}-${d.count}`}
                         cx={xScale(d.day)}
