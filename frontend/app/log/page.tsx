@@ -55,6 +55,8 @@ export default function LogPage(){
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
 
+        if (isSubmitting) return;
+
         setError("");
         setSuccess("");
 
@@ -163,7 +165,7 @@ export default function LogPage(){
                     <div className="flex flex-wrap gap-3">
                         <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Save Workout"}</Button>
                         <Link href="/dashboard">
-                            <Button variant="secondary" type="button">
+                            <Button variant="secondary" type="button" disabled={isSubmitting}>
                                 Back to Dashboard
                             </Button>
                         </Link>
