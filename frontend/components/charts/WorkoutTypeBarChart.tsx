@@ -2,23 +2,32 @@
 
 import * as d3 from "d3";
 
-type WorkoutTypePoint = {
+export type WorkoutTypePoint = {
     type: string;
     count: number;
 };
 
-const mockData: WorkoutTypePoint[] = [
-    { type: "Run", count: 5 },
-    { type: "Strength", count: 3 },
-    { type: "Other", count: 2 },
-];
+type Props = {
+    data: WorkoutTypePoint[];
+};
 
-export default function WorkoutTypeBarChart(){
+export default function WorkoutTypeBarChart({ data }: Props){
     const width = 600;
     const height = 260;
     const margin = { top: 20, right: 25, bottom: 40, left: 40 };
-    const xScale = d3.scaleBand().domain(mockData.map((d) => d.type)).range([margin.left, width - margin.right]).padding(0.3);
-    const yScale = d3.scaleLinear().domain([0, d3.max(mockData, (d) => d.count) ?? 0]).nice().range([height - margin.bottom, margin.top]);
+
+    const xScale = d3
+        .scaleBand()
+        .domain(data.map((d) => d.type))
+        .range([margin.left, width - margin.right])
+        .padding(0.3);
+        
+    const yScale = d3
+        .scaleLinear()
+        .domain([0, d3.max(data, (d) => d.count) ?? 0])
+        .nice()
+        .range([height - margin.bottom, margin.top]);
+
     const yTicks = yScale.ticks(4);
 
     return(
@@ -51,7 +60,7 @@ export default function WorkoutTypeBarChart(){
                     </g>
                 ))}
 
-                {mockData.map((d) => {
+                {data.map((d) => {
                     const x = xScale(d.type) ?? 0;
                     const barWidth = xScale.bandwidth();
                     const y = yScale(d.count);
