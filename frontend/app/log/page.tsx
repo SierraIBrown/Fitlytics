@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createWorkout } from "@/lib/api";
 import Link from "next/link";
 import PageHeader from "@/components/layout/PageHeader";
@@ -39,6 +40,8 @@ export default function LogPage(){
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
+    const router = useRouter();
+
     function handleChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ){
@@ -76,6 +79,8 @@ export default function LogPage(){
             await createWorkout(payload);
             setSuccess("Workout saved successfully.");
             setForm(initialForm);
+            router.push("/dashboard");
+            router.refresh();
         } catch(err){
             console.error(err);
             setError(err instanceof Error ? err.message : "Failed to save workout.");
