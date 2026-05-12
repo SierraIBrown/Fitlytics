@@ -8,13 +8,18 @@ import Card from "@/components/ui/Card";
 import Section from "@/components/ui/Section";
 import Select from '@/components/ui/Select';
 import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 import WeeklyWorkoutsLineChart from "@/components/charts/WeeklyWorkoutsLineChart";
 import WorkoutTypeBarChart from "@/components/charts/WorkoutTypeBarChart";
+import { filter } from "d3";
 
 export default function ProgressPage(){
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [typeFilter, setTypeFilter] = useState("all");
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
 
     useEffect(() => {
         async function loadWorkouts(){
@@ -34,6 +39,28 @@ export default function ProgressPage(){
         loadWorkouts();
     }, []);
 
+    const filteredWorkouts = useMemo(() => {
+        return workouts.filter((workout) => {
+            if(typeFilter !== "all" && workout.type !== typeFilter){
+                return false;
+            }
+
+            const workoutDate = new Date(workout.date);
+
+            if(fromDate){
+                const from = new Date(fromDate);
+                if(workoutDate < from) return false;
+            }
+
+            if(toDate){
+                const to = new Date(toDate);
+                if(workoutDate > to) return false;
+            }
+
+            return true;
+        });
+    }, [workouts, typeFilter, fromDate, toDate]);
+
     const weeklyData = useMemo(() => {
         const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -42,7 +69,7 @@ export default function ProgressPage(){
             count: 0,
         }));
 
-        workouts.forEach((workout) => {
+        filteredWorkouts.forEach((workout) => {
             const date = new Date(workout.date);
             const dayIndex = date.getDay();
             counts[dayIndex].count += 1;
@@ -57,7 +84,7 @@ export default function ProgressPage(){
             counts[6],
             counts[0],
         ];
-    }, [workouts]);
+    }, [filteredWorkouts]);
 
     const typeData = useMemo(() => {
         const counts: Record<string, number> ={
@@ -66,7 +93,7 @@ export default function ProgressPage(){
             Other: 0,
         };
 
-        workouts.forEach((workout) => {
+        filteredWorkouts.forEach((workout) => {
             if(workout.type === "run") counts.Run += 1;
             else if(workout.type === "strength") counts.Strength += 1;
             else counts.Other += 1;
@@ -76,7 +103,7 @@ export default function ProgressPage(){
             type,
             count,
         }));
-    }, [workouts]);
+    }, [filteredWorkouts]);
 
     return(
         <main className="mx-auto max-w-6xl px-6 py-8">
@@ -87,7 +114,8 @@ export default function ProgressPage(){
                         <Select 
                             label="Workout Type" 
                             id="workoutType" 
-                            defaultValue="all" 
+                            value={typeFilter}
+                            onChange={(e) => setTypeFilter(e.target.value)} 
                             options={[
                                 { label: "All Workouts", value: "all" },
                                 { label: "Run", value: "run" },
@@ -96,8 +124,15 @@ export default function ProgressPage(){
                             ]}
                         />
 
-                        <Input label="From" id="fromDate" type="date"/>
-                        <Input label="To" id="toDate" type="date"/>
+                        <Input label="From" id="fromDate" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)}/>
+                        <Input label="To" id="toDate" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)}/>
+
+                        <Button type="button" variant="secondary" onClick={() => {
+                            setTypeFilter("all");
+                            setFromDate("");
+                            setToDate("");
+                        }}
+                        >Reset Filters</Button>
                     </div>
                 </Card>
             </Section>
