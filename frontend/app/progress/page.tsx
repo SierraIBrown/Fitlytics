@@ -15,6 +15,9 @@ export default function ProgressPage(){
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [typeFilter, setTypeFilter] = useState("all");
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
 
     useEffect(() => {
         async function loadWorkouts(){
@@ -87,7 +90,8 @@ export default function ProgressPage(){
                         <Select 
                             label="Workout Type" 
                             id="workoutType" 
-                            defaultValue="all" 
+                            value={typeFilter}
+                            onChange={(e) => setTypeFilter(e.target.value)} 
                             options={[
                                 { label: "All Workouts", value: "all" },
                                 { label: "Run", value: "run" },
@@ -96,8 +100,8 @@ export default function ProgressPage(){
                             ]}
                         />
 
-                        <Input label="From" id="fromDate" type="date"/>
-                        <Input label="To" id="toDate" type="date"/>
+                        <Input label="From" id="fromDate" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)}/>
+                        <Input label="To" id="toDate" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)}/>
                     </div>
                 </Card>
             </Section>
