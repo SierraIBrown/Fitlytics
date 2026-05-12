@@ -222,7 +222,7 @@ export default function DashboardPage(){
                 </Section>
             </div>
 
-            <Section title="Progress Preview" subtitle="A quick look at where future visualization will go">
+            <Section title="Progress Preview" subtitle="A quick look at your recent training trends">
                 <div className="grid gap-6 lg:grid-cols-2">
                     <Card title="Weekly Activity">
                         {loading ? (
