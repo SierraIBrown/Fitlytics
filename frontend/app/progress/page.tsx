@@ -8,6 +8,7 @@ import Card from "@/components/ui/Card";
 import Section from "@/components/ui/Section";
 import Select from '@/components/ui/Select';
 import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 import WeeklyWorkoutsLineChart from "@/components/charts/WeeklyWorkoutsLineChart";
 import WorkoutTypeBarChart from "@/components/charts/WorkoutTypeBarChart";
 import { filter } from "d3";
@@ -126,7 +127,12 @@ export default function ProgressPage(){
                         <Input label="From" id="fromDate" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)}/>
                         <Input label="To" id="toDate" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)}/>
 
-                        
+                        <Button type="button" variant="secondary" onClick={() => {
+                            setTypeFilter("all");
+                            setFromDate("");
+                            setToDate("");
+                        }}
+                        >Reset Filters</Button>
                     </div>
                 </Card>
             </Section>
