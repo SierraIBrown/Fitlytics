@@ -7,6 +7,8 @@ import Button from "@/components/ui/Button";
 import Section from "@/components/ui/Section";
 import Card from "@/components/ui/Card";
 import StatCard from "@/components/dashboard/StatCard";
+import WeeklyWorkoutsLineChart from "@/components/charts/WeeklyWorkoutsLineChart";
+import WorkoutTypeBarChart from "@/components/charts/WorkoutTypeBarChart";
 
 const suggestedWorkouts = [
     {
@@ -27,6 +29,9 @@ export default function DashboardPage(){
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [typeFilter, setTypeFilter] = useState("all");
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
 
     useEffect(() => {
         async function loadWorkouts(){
@@ -45,6 +50,72 @@ export default function DashboardPage(){
 
         loadWorkouts();
     }, []);
+
+        const filteredWorkouts = useMemo(() => {
+        return workouts.filter((workout) => {
+            if(typeFilter !== "all" && workout.type !== typeFilter){
+                return false;
+            }
+
+            const workoutDate = new Date(workout.date);
+
+            if(fromDate){
+                const from = new Date(fromDate);
+                if(workoutDate < from) return false;
+            }
+
+            if(toDate){
+                const to = new Date(toDate);
+                if(workoutDate > to) return false;
+            }
+
+            return true;
+        });
+    }, [workouts, typeFilter, fromDate, toDate]);
+
+    const weeklyData = useMemo(() => {
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        const counts = days.map((day) => ({
+            day,
+            count: 0,
+        }));
+
+        filteredWorkouts.forEach((workout) => {
+            const date = new Date(workout.date);
+            const dayIndex = date.getDay();
+            counts[dayIndex].count += 1;
+        });
+
+        return[
+            counts[1],
+            counts[2],
+            counts[3],
+            counts[4],
+            counts[5],
+            counts[6],
+            counts[0],
+        ];
+    }, [filteredWorkouts]);
+
+    const typeData = useMemo(() => {
+        const counts: Record<string, number> ={
+            Run: 0,
+            Strength: 0,
+            Other: 0,
+        };
+
+        filteredWorkouts.forEach((workout) => {
+            if(workout.type === "run") counts.Run += 1;
+            else if(workout.type === "strength") counts.Strength += 1;
+            else counts.Other += 1;
+        });
+
+        return Object.entries(counts).map(([type, count]) => ({
+            type,
+            count,
+        }));
+    }, [filteredWorkouts]);
 
     const stats = useMemo(() => {
         const totalWorkouts = workouts.length;
@@ -151,12 +222,23 @@ export default function DashboardPage(){
                 </Section>
             </div>
 
-            <Section title="Progress Preview" subtitle="A quick look at where future visualization will go">
-                <Card title="Weekly Activity">
-                    <p style={{ color: "var(--color-text-secondary)" }}>
-                        Progress charts and workout trends will appear here in a future update.
-                    </p>
-                </Card>
+            <Section title="Progress Preview" subtitle="A quick look at your recent training trends">
+                <div className="grid gap-6 lg:grid-cols-2">
+                    <Card title="Weekly Activity">
+                        {loading ? (
+                            <p>Loading chart...</p>
+                        ) : (
+                            <WeeklyWorkoutsLineChart data={weeklyData} />
+                        )}
+                    </Card>
+                    <Card title="Weekly Type Distribution">
+                        {loading ? (
+                            <p>Loading chart...</p>
+                        ) : (
+                            <WorkoutTypeBarChart data={typeData} />
+                        )}
+                    </Card>
+                </div>
             </Section>
         </main>
     );
